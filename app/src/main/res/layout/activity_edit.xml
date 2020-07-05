@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="@dimen/padding_create_item"
+    tools:context=".EditActivity">
+
+    <EditText
+        android:id="@+id/editTextNameEdit"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="@string/name"
+        android:inputType="text"
+        app:layout_constraintBottom_toTopOf="@+id/editTextPriceEdit"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintVertical_chainStyle="packed"
+        app:layout_constraintVertical_bias="0.2"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <EditText
+        android:id="@+id/editTextPriceEdit"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="@string/price"
+        android:inputType="text"
+        app:layout_constraintBottom_toTopOf="@+id/switchAddPhotoFromGalleryEdit"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/editTextNameEdit"
+        android:layout_marginTop="@dimen/margin_top"/>
+
+    <Switch
+        android:id="@+id/switchAddPhotoFromGalleryEdit"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/add_photo_from_gallery"
+        android:textSize="@dimen/button_text_size"
+        app:layout_constraintBottom_toTopOf="@+id/mediaContainerEdit"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/editTextPriceEdit"
+        android:layout_marginTop="@dimen/margin_top"/>
+
+    <FrameLayout
+        android:id="@+id/mediaContainerEdit"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toTopOf="@+id/buttonEdit"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/switchAddPhotoFromGalleryEdit"
+        android:layout_marginTop="@dimen/margin_top">
+
+        <ImageView
+            android:id="@+id/imageViewGoodsItemEdit"
+            android:layout_width="@dimen/size_image_create_item"
+            android:layout_height="@dimen/size_image_create_item"
+            android:adjustViewBounds="true"
+            tools:src="@drawable/ic_baseline_photo_24" />
+
+    </FrameLayout>
+
+    <Button
+        android:id="@+id/buttonEdit"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/my_button"
+        android:text="@string/edit_item"
+        android:textAllCaps="false"
+        android:textColor="@color/colorWhite"
+        android:textSize="@dimen/button_text_size"
+        app:layout_constraintBottom_toTopOf="@id/buttonDelete"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/mediaContainerEdit"
+        android:layout_marginTop="@dimen/margin_top"/>
+
+    <Button
+        android:id="@+id/buttonDelete"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/my_button"
+        android:text="@string/delete_item"
+        android:textAllCaps="false"
+        android:textColor="@color/colorWhite"
+        android:textSize="@dimen/button_text_size"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/buttonEdit"
+        android:layout_marginTop="@dimen/margin_top"/>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

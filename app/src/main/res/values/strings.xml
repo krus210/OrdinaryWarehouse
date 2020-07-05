@@ -1,0 +1,16 @@
+<resources>
+    <string name="app_name">OrdinaryWarehouse</string>
+    <string name="load_more">Load more</string>
+    <string name="name">Name</string>
+    <string name="price">Price</string>
+    <string name="currency">"Руб. "</string>
+    <string name="add_photo_from_gallery">Add photo from gallery</string>
+    <string name="create_item_of_goods">Create item of goods</string>
+    <string name="incorrect_price">Incorrect price</string>
+    <string name="empty_name">Empty name</string>
+    <string name="image_is_not_chosen">Image is not chosen</string>
+    <string name="last_items">there are last items of goods</string>
+    <string name="fail_read_file">Fail reading file</string>
+    <string name="edit_item">Edit item</string>
+    <string name="delete_item">Delete item</string>
+</resources>

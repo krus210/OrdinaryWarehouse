@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="elevation">4dp</dimen>
+    <dimen name="margin_bottom_30dp">30dp</dimen>
+    <dimen name="margin_10dp">10dp</dimen>
+    <dimen name="text_size">14sp</dimen>
+    <dimen name="goods_item_padding">16dp</dimen>
+    <dimen name="max_size_photo">96dp</dimen>
+    <dimen name="max_size_photo_create">200dp</dimen>
+    <dimen name="size_image_create_item">200dp</dimen>
+    <dimen name="button_text_size">14sp</dimen>
+    <dimen name="padding_create_item">40dp</dimen>
+    <dimen name="margin_top">16dp</dimen>
+</resources>
