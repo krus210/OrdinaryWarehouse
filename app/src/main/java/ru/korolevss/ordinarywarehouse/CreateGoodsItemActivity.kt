@@ -1,20 +1,29 @@
 package ru.korolevss.ordinarywarehouse
 
+import android.Manifest
+import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.graphics.Bitmap
+import android.location.Location
+import android.os.Build
 import android.os.Bundle
 import android.provider.MediaStore
 import android.util.Log
 import android.widget.Toast
+import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
+import com.google.android.gms.location.FusedLocationProviderClient
+import com.google.android.gms.location.LocationServices
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import kotlinx.android.synthetic.main.activity_create_goods_item.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import ru.korolevss.ordinarywarehouse.model.Coordinates
 import ru.korolevss.ordinarywarehouse.model.Goods
 import java.io.*
 import java.lang.NumberFormatException
@@ -23,11 +32,16 @@ import java.util.*
 class CreateGoodsItemActivity : AppCompatActivity() {
 
     private companion object {
+        private const val REQUEST_LOCATION = 100
         const val REQUEST_IMAGE_CAPTURE = 1
         const val GALLERY_REQUEST = 2
         var attachmentImage = ""
+        val coordinates = Coordinates(55.7625506743728, 37.6082298810962)
     }
 
+    private lateinit var fusedLocationClient: FusedLocationProviderClient
+
+    @RequiresApi(Build.VERSION_CODES.M)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_create_goods_item)
@@ -35,6 +49,8 @@ class CreateGoodsItemActivity : AppCompatActivity() {
         imageViewGoodsItemCreate.setOnClickListener {
             dispatchTakePictureIntent()
         }
+        requestedGeo()
+
         buttonCreate.setOnClickListener {
             val name = editTextName.text.toString()
             try {
@@ -51,7 +67,7 @@ class CreateGoodsItemActivity : AppCompatActivity() {
                         ).show()
                     }
                     else -> {
-                        saveGoodsItem(name, price, attachmentImage)
+                        saveGoodsItem(name, price, attachmentImage, coordinates)
                     }
                 }
             } catch (e: NumberFormatException) {
@@ -60,14 +76,17 @@ class CreateGoodsItemActivity : AppCompatActivity() {
                 ).show()
             }
         }
+
+
     }
 
-    private fun saveGoodsItem(name: String, price: Double, attachmentImage: String) {
+    @RequiresApi(Build.VERSION_CODES.M)
+    private fun saveGoodsItem(name: String, price: Double, attachmentImage: String, coordinates: Coordinates) {
         lifecycleScope.launch(Dispatchers.IO) {
             try {
                 val file = File(filesDir, "json.json")
                 if (!file.exists()) {
-                    val item = Goods(1, name, price, attachmentImage)
+                    val item = Goods(1, name, price, attachmentImage, coordinates)
                     val listOfItems = listOf(item)
                     val jsonString = Gson().toJson(listOfItems)
                     file.writeText(jsonString)
@@ -78,7 +97,7 @@ class CreateGoodsItemActivity : AppCompatActivity() {
                     } else {
                         listOfItems[0].id + 1
                     }
-                    val item = Goods(id, name, price, attachmentImage)
+                    val item = Goods(id, name, price, attachmentImage, coordinates)
                     listOfItems.add(0, item)
                     val jsonString = Gson().toJson(listOfItems)
                     file.writeText(jsonString)
@@ -140,11 +159,59 @@ class CreateGoodsItemActivity : AppCompatActivity() {
             }
         }
     }
+
+    @RequiresApi(Build.VERSION_CODES.M)
+    private fun requestedGeo() {
+        val locationPermission: String = Manifest.permission.ACCESS_COARSE_LOCATION
+        val hasPermission = checkSelfPermission(locationPermission)
+        val permissions = arrayOf(locationPermission)
+        if (hasPermission != PackageManager.PERMISSION_GRANTED) {
+            requestPermissions(permissions, REQUEST_LOCATION)
+        } else {
+            getGeo(true)
+        }
+    }
+
+    override fun onRequestPermissionsResult(
+        requestCode: Int, permissions: Array<out String>, grantResults: IntArray
+    ) {
+        when (requestCode) {
+            REQUEST_LOCATION -> {
+                if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    getGeo(true)
+                } else {
+                    Toast.makeText(
+                        this,
+                        getString(R.string.selected_city_moscow), Toast.LENGTH_SHORT
+                    ).show()
+                    getGeo(false)
+                }
+            }
+            else -> {
+                super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+            }
+        }
+    }
+
+    @SuppressLint("MissingPermission")
+    private fun getGeo(isGeoPermissionGranted: Boolean) {
+        if (isGeoPermissionGranted) {
+            fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
+            fusedLocationClient.lastLocation
+                .addOnSuccessListener { location: Location? ->
+                    location?.let {
+                        coordinates.lat = location.latitude
+                        coordinates.lon = location.longitude
+                    }
+                }
+
+        }
+    }
 }
 
 fun readListOfItems(file: File): MutableList<Goods> {
     val bufferedReader: BufferedReader = file.bufferedReader()
-    val inputString = bufferedReader.use { it.readText()}
+    val inputString = bufferedReader.use { it.readText() }
     val itemType = object : TypeToken<MutableList<Goods>>() {}.type
     return Gson().fromJson<MutableList<Goods>>(inputString, itemType)
 }

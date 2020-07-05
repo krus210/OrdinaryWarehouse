@@ -48,4 +48,16 @@
         app:layout_constraintStart_toEndOf="@+id/mediaContainer"
         app:layout_constraintTop_toBottomOf="@+id/textViewGoodsItemName" />
 
+    <TextView
+        android:id="@+id/textViewCoordinates"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        tools:text="@string/coordinates"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/mediaContainer"
+        app:layout_constraintTop_toBottomOf="@+id/textViewGoodsItemPrice"
+        android:layout_marginStart="@dimen/margin_10dp"
+        android:layout_marginEnd="@dimen/margin_10dp"
+        android:layout_marginTop="@dimen/margin_10dp"/>
+
 </androidx.constraintlayout.widget.ConstraintLayout>

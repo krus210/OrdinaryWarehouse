@@ -15,4 +15,6 @@
     <string name="delete_item">Delete item</string>
     <string name="search">Search</string>
     <string name="no_results">No results</string>
+    <string name="coordinates">Coordinates</string>
+    <string name="selected_city_moscow">Permission denied, selected Mosow warehouse</string>
 </resources>

@@ -119,7 +119,8 @@ class EditActivity : AppCompatActivity() {
                 val file = File(filesDir, "json.json")
                 val listOfItems = readListOfItems(file)
                 val indexOfItem = listOfItems.indexOfFirst { it.id ==  idOfItem}
-                val copyItem = Goods(idOfItem, name, price, attachmentImage)
+                val itemCoordinates = listOfItems.first { it.id ==  idOfItem }.coordinates
+                val copyItem = Goods(idOfItem, name, price, attachmentImage, itemCoordinates)
                 listOfItems[indexOfItem] = copyItem
                 val jsonString = Gson().toJson(listOfItems)
                 file.writeText(jsonString)
