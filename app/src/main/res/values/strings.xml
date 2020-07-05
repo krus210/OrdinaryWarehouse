@@ -13,4 +13,6 @@
     <string name="fail_read_file">Fail reading file</string>
     <string name="edit_item">Edit item</string>
     <string name="delete_item">Delete item</string>
+    <string name="search">Search</string>
+    <string name="no_results">No results</string>
 </resources>

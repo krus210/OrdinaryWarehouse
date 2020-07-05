@@ -19,6 +19,7 @@ import ru.korolevss.ordinarywarehouse.model.Goods
 import java.io.File
 import java.io.IOException
 import java.lang.IndexOutOfBoundsException
+import java.lang.StringBuilder
 
 class MainActivity : AppCompatActivity(), GoodsAdapter.OnLoadMoreBtnClickListener,
     GoodsAdapter.OnItemEditClickListener {
@@ -29,6 +30,7 @@ class MainActivity : AppCompatActivity(), GoodsAdapter.OnLoadMoreBtnClickListene
         const val NAME = "NAME"
         const val IMAGE = "IMAGE"
         const val PRICE = "PRICE"
+        var searchString = ""
     }
 
     private val file: File by lazy { File(filesDir, "json.json") }
@@ -44,6 +46,10 @@ class MainActivity : AppCompatActivity(), GoodsAdapter.OnLoadMoreBtnClickListene
         loadData()
         swipeContainer.setOnRefreshListener {
             refreshData()
+        }
+        buttonSearch.setOnClickListener {
+            searchString = editTextSearch.text.toString()
+            loadDataWithSearch(searchString)
         }
     }
 
@@ -116,10 +122,11 @@ class MainActivity : AppCompatActivity(), GoodsAdapter.OnLoadMoreBtnClickListene
                         } else {
                             readListOfItems(file)
                         }
+                        val subListOfItems = getSubListOfItems(listOfItems, 0)
                         with(container.adapter as GoodsAdapter) {
-                            val itemDiffUtilCallback = ItemDiffUtilCallback(list, listOfItems)
+                            val itemDiffUtilCallback = ItemDiffUtilCallback(list, subListOfItems)
                             val itemDiffResult = DiffUtil.calculateDiff(itemDiffUtilCallback)
-                            newPosts(listOfItems)
+                            newPosts(subListOfItems)
                             itemDiffResult.dispatchUpdatesTo(this)
                         }
                     } catch (e: IOException) {
@@ -137,6 +144,41 @@ class MainActivity : AppCompatActivity(), GoodsAdapter.OnLoadMoreBtnClickListene
     }
 
     override fun onLoadMoreBtnClicked() {
+        if (searchString.isNotEmpty()) {
+            searchString = ""
+            loadDataWithSearch(searchString)
+            editTextSearch.setText(searchString)
+        } else {
+            lifecycleScope.launch {
+                try {
+                    determinateBar.isVisible = true
+                    val listOfItems = if (!file.exists()) {
+                        mutableListOf()
+                    } else {
+                        readListOfItems(file)
+                    }
+                    with(container.adapter as GoodsAdapter) {
+                        val lastIdOfAdapter = list.last().id
+                        val startIndex = listOfItems.indexOfFirst { it.id == lastIdOfAdapter } + 1
+                        val subListOfItems = getSubListOfItems(listOfItems, startIndex)
+                        Log.d("LOAD_MORE", "$subListOfItems")
+                        list.addAll(subListOfItems)
+                        notifyItemRangeInserted(startIndex, subListOfItems.size)
+                    }
+                } catch (e: IOException) {
+                    Toast.makeText(
+                        this@MainActivity,
+                        getString(R.string.fail_read_file),
+                        Toast.LENGTH_SHORT
+                    ).show()
+                } finally {
+                    determinateBar.isVisible = false
+                }
+            }
+        }
+    }
+
+    private fun loadDataWithSearch(searchString: String) {
         lifecycleScope.launch {
             try {
                 determinateBar.isVisible = true
@@ -145,12 +187,25 @@ class MainActivity : AppCompatActivity(), GoodsAdapter.OnLoadMoreBtnClickListene
                 } else {
                     readListOfItems(file)
                 }
-                with(container.adapter as GoodsAdapter) {
-                    val lastIdOfAdapter = list.last().id
-                    val startIndex = listOfItems.indexOfFirst { it.id == lastIdOfAdapter } + 1
-                    val subListOfItems = getSubListOfItems(listOfItems, startIndex)
-                    list.addAll(subListOfItems)
-                    notifyItemRangeInserted(startIndex, subListOfItems.size)
+                val searchList = mutableListOf<Goods>()
+                listOfItems.forEach {
+                    if (it.name.contains(searchString)) {
+                        searchList.add(it)
+                    }
+                }
+                if (searchList.isEmpty()) {
+                    Toast.makeText(
+                        this@MainActivity,
+                        getString(R.string.no_results),
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
+                val subListOfItems = getSubListOfItems(searchList, 0)
+                with (container.adapter as GoodsAdapter) {
+                    val itemDiffUtilCallback = ItemDiffUtilCallback(list, subListOfItems)
+                    val itemDiffResult = DiffUtil.calculateDiff(itemDiffUtilCallback)
+                    newPosts(subListOfItems)
+                    itemDiffResult.dispatchUpdatesTo(this)
                 }
             } catch (e: IOException) {
                 Toast.makeText(
@@ -183,9 +238,11 @@ class MainActivity : AppCompatActivity(), GoodsAdapter.OnLoadMoreBtnClickListene
         if (lastIndex > listOfItems.lastIndex) {
             lastIndex = listOfItems.lastIndex
         }
-        if (startIndex >= lastIndex) {
+        if (startIndex > lastIndex) {
             return mutableListOf()
         }
         return listOfItems.subList(startIndex, lastIndex + 1)
     }
+
+
 }
